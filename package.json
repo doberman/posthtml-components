@@ -1,0 +1,21 @@
+{
+  "name": "posthml-components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "is-json": "^2.0.1",
+    "posthtml-expressions": "^1.4.5",
+    "posthtml-render": "^1.2.2"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2",
+    "posthtml": "^0.13.1"
+  }
+}
