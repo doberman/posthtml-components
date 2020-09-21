@@ -8,9 +8,16 @@ const render = require("posthtml-render");
 const expressions = require("posthtml-expressions");
 
 /**
+ * Plugin options
+ * @typedef Options
+ * @type {object}
+ * @property {string} Options.root [path for component files] 
+ */
+
+/**
  * Process every node content with posthtml
  * @param  {Object} node [posthtml element object]
- * @param  {Object} options
+ * @param  {Options} options [plugin options]
  * @return {Function}
  */
 function processNodeContentWithPosthtml(node, options) {
@@ -39,7 +46,7 @@ function parseLocals(locals) {
 
 /**
  * readFile
- * @param  {Object} options  [plugin options object]
+ * @param  {Options} options  [plugin options object]
  * @param  {String} href     [node's href attribute value]
  * @return {Promise<String>} [Promise with file content's]
  */
@@ -54,7 +61,7 @@ function readFile(options, href) {
 }
 
 /**
- * @param  {Object} options   [plugin options]
+ * @param  {Options} options   [plugin options]
  * @return {Promise | Object} [posthtml tree or promise]
  */
 function parse(options) {
