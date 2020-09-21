@@ -1,4 +1,4 @@
-# Components Plugin <img align="right" width="220" height="200" title="PostHTML logo" src="//posthtml.github.io/posthtml/logo.svg">
+# Components Plugin <img align="right" width="220" height="200" title="PostHTML logo" src="https://posthtml.github.io/posthtml/logo.svg">
 
 Opinionated components plugin. Replaces custom HTML elements with content from template files with the same name as the element. Based on [posthtml-modules](https://github.com/posthtml/posthtml-modules).
 
