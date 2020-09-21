@@ -6,7 +6,9 @@ Before:
 ```html
 <!-- index.html -->
 <div>
-    <my-component locals='{"title":"Wow"}'><p>Some content</p></my-component>
+    <my-component locals='{"title":"Wow"}'>
+        <p>Some content</p>
+    </my-component>
 </div>
 ```
 
@@ -23,7 +25,9 @@ After:
 <div>
     <div class="my-component">
         <h1 class="my-component__title">Wow</h1>
-        <div class="my-component__content"><p>Some content</p></div>
+        <div class="my-component__content">
+            <p>Some content</p>
+        </div>
     </div>
 </div>
 ```
