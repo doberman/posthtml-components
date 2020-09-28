@@ -43,3 +43,13 @@ it("should parse wrapped component", async () => {
     .then((result) => clean(result.html));
   expect(html).toEqual(expected);
 });
+
+it("should parse different wrapped component", async () => {
+  const actual = `<div><my-wrap><with-locals locals={"type":"submit"}>A button</with-locals></my-wrap></div>`;
+  const expected = `<div><div class="wrap"><button type="submit">A button</button></div></div>`;
+  const html = await posthtml()
+    .use(plugin(options))
+    .process(actual)
+    .then((result) => clean(result.html));
+  expect(html).toEqual(expected);
+});
