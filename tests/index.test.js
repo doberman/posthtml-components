@@ -33,3 +33,13 @@ it("should use locals", async () => {
     .then((result) => clean(result.html));
   expect(html).toEqual(expected);
 });
+
+it("should parse wrapped component", async () => {
+  const actual = `<div><my-wrap><my-wrap>Test</my-wrap></my-wrap></div>`;
+  const expected = `<div><div class="wrap"><div class="wrap">Test</div></div></div>`;
+  const html = await posthtml()
+    .use(plugin(options))
+    .process(actual)
+    .then((result) => clean(result.html));
+  expect(html).toEqual(expected);
+});
