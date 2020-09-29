@@ -11,7 +11,7 @@ const expressions = require("posthtml-expressions");
  * Plugin options
  * @typedef Options
  * @type {object}
- * @property {string} Options.root [path for component files] 
+ * @property {string} Options.root [path for component files]
  */
 
 /**
@@ -21,7 +21,9 @@ const expressions = require("posthtml-expressions");
  * @return {Function}
  */
 function processNodeContentWithPosthtml(node, options) {
+  // console.log("processNodeContentWithPosthtml called", node.tag);
   return function (content) {
+    // console.log("inner processNodeContentWithPosthtml", node.tag, content);
     return processWithPostHtml(
       options.plugins,
       path.join(options.root, node.tag),
@@ -47,58 +49,49 @@ function parseLocals(locals) {
 /**
  * readFile
  * @param  {Options} options  [plugin options object]
- * @param  {String} href     [node's href attribute value]
+ * @param  {String} tag     [node's tag name]
  * @return {Promise<String>} [Promise with file content's]
  */
-function readFile(options, href) {
-  const filePath = path.join(options.root, href);
-
-  return new Promise((resolve, reject) => {
-    return fs.readFile(filePath, "utf8", (error, response) =>
-      error ? reject(error) : resolve(response)
-    );
-  });
+function readFile(options, tag) {
+  const filePath = path.join(options.root, `${tag}.html`);
+  return fs.readFileSync(filePath, "utf8");
 }
 
 /**
  * @param  {Options} options   [plugin options]
- * @return {Promise | Object} [posthtml tree or promise]
+ * @return {() => Promise | Object} [posthtml tree or promise]
  */
 function parse(options) {
-  return function (tree) {
-    const promises = [];
+  return async function (tree) {
+    const nodes = [];
 
-    tree.match({ tag: /^.+-.+/ }, (node) => {
-      promises.push(
-        readFile(options, `${node.tag}.html`)
-          .then(processNodeContentWithPosthtml(node, options))
-          .then((tree) => {
-            // Recursively call parse with node's content tree
-            return parse(
-              Object.assign({}, options, {
-                root: path.join(options.root, node.tag),
-              })
-            )(tree);
-          })
-          .then((tree) => {
-            // Remove <content> tags and replace them with node's content
-            const content = tree.match({ tag: "content" }, () => {
-              if (node.content && node.attrs && isJSON(node.attrs.locals)) {
-                return parseLocals(node.attrs.locals)(node.content);
-              }
-
-              return node.content || "";
-            });
-            // Remove <module> tag and set inner content
-            node.tag = false;
-            node.content = content;
-          })
-      );
-
+    // find all nodes and store in reverse order
+    tree.match({ tag: /.+-.+/ }, (node) => {
+      nodes.unshift(node);
       return node;
     });
 
-    return promises.length > 0 ? Promise.all(promises).then(() => tree) : tree;
+    // loop through all nodes and parse them
+    for (const node of nodes) {
+      const fileContents = readFile(options, node.tag);
+      let tree = await processNodeContentWithPosthtml(
+        node,
+        options
+      )(fileContents);
+      tree = await parse(options)(tree);
+      const content = tree.match({ tag: "content" }, () => {
+        if (node.content && node.attrs && isJSON(node.attrs.locals)) {
+          const parsedLocals = parseLocals(node.attrs.locals)(node.content);
+          return parsedLocals;
+        }
+
+        return node.content || "";
+      });
+      node.tag = false;
+      node.content = content;
+    }
+
+    return tree;
   };
 }
 
