@@ -1,5 +1,6 @@
 const plugin = require("..");
 const posthtml = require("posthtml");
+const path = require("path");
 
 const clean = (html) => html.replace(/(\n|\t)/g, "").trim();
 const options = { root: "./tests" };
@@ -72,4 +73,25 @@ it("should parse wrapped component with locals", async () => {
     .process(actual)
     .then((result) => clean(result.html));
   expect(html).toEqual(expected);
+});
+
+it("should set proper dependency message(s)", async () => {
+  const tagNames = {
+    outer: "my-wrap",
+    inner: "my-element",
+  };
+
+  const actual = `<div><${tagNames.outer}><${tagNames.inner}></${tagNames.inner}></${tagNames.outer}></div>`;
+  const expected = [
+    {
+      type: "dependency",
+      file: path.resolve(path.join(options.root, `${tagNames.outer}.html`)),
+    },
+    {
+      type: "dependency",
+      file: path.resolve(path.join(options.root, `${tagNames.inner}.html`)),
+    },
+  ];
+  const result = await posthtml().use(plugin(options)).process(actual);
+  expect(result.messages).toStrictEqual(expected);
 });

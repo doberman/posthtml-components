@@ -11,11 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "is-json": "^2.0.1",
+    "posthtml": "^0.13.3",
     "posthtml-expressions": "^1.4.5",
-    "posthtml-render": "^1.2.2"
+    "posthtml-parser": "^0.5.0"
   },
   "devDependencies": {
     "jest": "^26.4.2",
-    "posthtml": "^0.13.1"
+    "prettier": "^2.1.2"
   }
 }
